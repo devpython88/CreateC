@@ -5,3 +5,4 @@ CreateC is simple c++ build tool. It simplifies most aspects of c++ building. Su
 
 
 ## Note: I am not trying to say that CMake and Make are not good than CreateC in any way!!!!
+## Please read thee TUTORIAL.md to learn how to use CreateC. (CreateC uses JSON and G++)
