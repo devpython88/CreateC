@@ -1,0 +1,15 @@
+{
+    "project": "helloworld",
+    "sources": [ 
+        "main.cpp"
+    ],
+    "includes": [
+        "first"
+    ],
+    "libdirs": [
+        "first"
+    ],
+    "libraries": [
+        
+    ]
+}
