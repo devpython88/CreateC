@@ -1,4 +1,4 @@
-![ICON](/Icons/icon.jpeg)
+<img src="/icons/Icon.jpeg" alt="ICON" width=300/>
 
 # CreateC
 CreateC is simple c++ build tool. It simplifies most aspects of c++ building. Such as adding qt5, gtk, gtkmm.
