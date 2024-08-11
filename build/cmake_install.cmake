@@ -1,4 +1,4 @@
-# Install script for directory: /media/debos/226AD3E96AD3B7AD/CPP/tools/CreateC
+# Install script for directory: /mnt/HDD/CPP/tools/CreateC
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/media/debos/226AD3E96AD3B7AD/CPP/tools/CreateC/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/HDD/CPP/tools/CreateC/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

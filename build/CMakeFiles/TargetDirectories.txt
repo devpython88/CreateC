@@ -1,3 +1,3 @@
-/media/debos/226AD3E96AD3B7AD/CPP/tools/CreateC/build/CMakeFiles/createc.dir
-/media/debos/226AD3E96AD3B7AD/CPP/tools/CreateC/build/CMakeFiles/edit_cache.dir
-/media/debos/226AD3E96AD3B7AD/CPP/tools/CreateC/build/CMakeFiles/rebuild_cache.dir
+/mnt/HDD/CPP/tools/CreateC/build/CMakeFiles/createc.dir
+/mnt/HDD/CPP/tools/CreateC/build/CMakeFiles/edit_cache.dir
+/mnt/HDD/CPP/tools/CreateC/build/CMakeFiles/rebuild_cache.dir

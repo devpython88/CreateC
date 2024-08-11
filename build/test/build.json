@@ -1,7 +1,11 @@
 {
     "project": "helloworld",
+	"exe": "app",
+	"cstd": "20",
     "sources": [ 
-        "main.cpp"
+        "main.cpp",
+        "first/first.h",
+        "first/first.cpp"
     ],
     "includes": [
         "first"
@@ -9,7 +13,6 @@
     "libdirs": [
         "first"
     ],
-    "libraries": [
-        
+    "libraries": [        
     ]
 }

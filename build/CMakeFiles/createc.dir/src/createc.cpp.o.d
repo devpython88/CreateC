@@ -1,7 +1,7 @@
 CMakeFiles/createc.dir/src/createc.cpp.o: \
- /media/debos/226AD3E96AD3B7AD/CPP/tools/CreateC/src/createc.cpp \
- /usr/include/stdc-predef.h /usr/include/json.hpp \
- /usr/include/c++/12/algorithm /usr/include/c++/12/bits/stl_algobase.h \
+ /mnt/HDD/CPP/tools/CreateC/src/createc.cpp /usr/include/stdc-predef.h \
+ /usr/include/json.hpp /usr/include/c++/12/algorithm \
+ /usr/include/c++/12/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/12/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/12/bits/os_defines.h \
  /usr/include/features.h /usr/include/features-time64.h \
