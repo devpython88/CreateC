@@ -1,6 +1,7 @@
 <img src="/icons/Icon.jpeg" alt="ICON" width=300/>
 
 # CreateC
+Website <a href="devpython88.github.io">Here</a> <br>
 CreateC is simple c++ build tool. It simplifies most aspects of c++ building. Such as adding qt5, gtk, gtkmm.
 <br>
 <b>You can just add the name of qt5widgets, qt5core, qt5gui, gtkmm, gtk3 (exact names) and the package finding, adding, and compilation will be automatic!</b>
