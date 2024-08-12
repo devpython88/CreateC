@@ -6,16 +6,50 @@
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
-const std::string VERSION = "1.0";
-
-/****************************/
-/****************************/
+const std::string VERSION = "v1.4";
 
 void logInfo(std::string text){
     std::cout << "[INFO] " << text << std::endl;
 }
 
-int build(QString fileName, bool runAfterBuilding){
+void logError(std::string text){
+    std::cout << "[ERROR] " << text << std::endl;
+}
+
+void createCacheFile(QString projectName, QString executable){
+    json cacheData;
+
+    cacheData["project"] = projectName.toStdString();
+    cacheData["executable"] = executable.toStdString();
+
+    std::ofstream file("createc_cache.json");
+    if (file.is_open()){
+        file << cacheData.dump(4);
+        file.close();
+        return;
+    } else {
+        logError("Could not create cache file.");
+    }
+}
+
+json loadCacheFile(){
+    json cacheFile;
+
+    std::ifstream file("createc_cache.json");
+    if (file.is_open()){
+        file >> cacheFile;
+        file.close();
+        return cacheFile;
+    } else {
+        logError("Could not create cache file.");
+        return json();
+    }
+}
+
+/****************************/
+/****************************/
+
+int build(QString fileName){
     std::ifstream file(fileName.toStdString());
 
     if (!file.is_open()){
@@ -34,6 +68,17 @@ int build(QString fileName, bool runAfterBuilding){
     std::string projectName = j["project"];
     QString qProjectName(QString::fromStdString(projectName));
     QString executableName(qProjectName);
+    json cacheFile;
+
+    if (j.contains("exe")){
+        executableName = QString::fromStdString(j["exe"]);
+    }
+
+    if (!fs::exists("./createc_cache.json")){
+        createCacheFile(qProjectName, executableName);
+    } else {
+        cacheFile = loadCacheFile();
+    }
 
     if (!j.contains("sources")){
         std::cerr << "Source files not specified.\n";
@@ -49,6 +94,19 @@ int build(QString fileName, bool runAfterBuilding){
     json libDirs = json::array();
 
     auto sourcefiles = j["sources"];
+
+    if (j.contains("cleanBuild")){
+        bool doACleanBuild = j["cleanBuild"];
+
+        if (doACleanBuild){
+            if (!cacheFile.contains("executable")){
+                logError("Could not do a cleanBuild, No executable found in cache file (cache file might not exist. Try removing 'cleanBuild' temporarily.)");
+                return -1;
+            }
+
+            std::system(QString("rm -rf ./%1").arg(QString::fromStdString(cacheFile["executable"])).toStdString().c_str());
+        }
+    }
 
     if (j.contains("includes")){
         includeDirs = j["includes"];
@@ -66,10 +124,6 @@ int build(QString fileName, bool runAfterBuilding){
         }
 
         logInfo(QString("Set optimization level to %1.").arg(optimizationLevel).toStdString());
-    }
-
-    if (j.contains("exe")){
-        executableName = QString::fromStdString(j["exe"]);
     }
 
     if (j.contains("libraries")){
@@ -103,6 +157,8 @@ int build(QString fileName, bool runAfterBuilding){
         cStandard = standard;
         logInfo("Set clang standard to " + cStandard);
     }
+
+    /* END */
 
     // Make and run the command
     QString command("g++ -o ");
@@ -186,9 +242,6 @@ int build(QString fileName, bool runAfterBuilding){
     }
 
     std::cout << "Building completed.\n";
-    if (runAfterBuilding == true){
-        std::system(("./" + executableName.toStdString()).c_str());
-    }
     return 0;
 }
 
@@ -213,21 +266,13 @@ int main(int argc, char const *argv[])
     // if the user is trying to build a project
 
     if (arg == "-b"){
-        bool runAfterBuild = false;
 
         if (argc == 2){
             std::cerr << "No input file is provided.\n";
             return -1;
         }
-        if (argc == 3){
-            QString option(argv[3]);
 
-            if (option == "-r"){
-                runAfterBuild = true;
-            }
-        }
-
-        return build(argv[2], runAfterBuild);
+        return build(argv[2]);
     }
 
     return 0;
