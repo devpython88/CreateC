@@ -1,7 +1,7 @@
 {
     "cleanBuild": true,
     "project": "helloworld",
-	"exe": "helloapp",
+	"exe": "hellosss",
 	"cstd": "20",
     "sources": [ 
         "main.cpp",

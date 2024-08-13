@@ -6,7 +6,7 @@
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
-const std::string VERSION = "v1.4";
+const std::string VERSION = "v1.61";
 
 void logInfo(std::string text){
     std::cout << "[INFO] " << text << std::endl;
@@ -69,6 +69,7 @@ int build(QString fileName){
     QString qProjectName(QString::fromStdString(projectName));
     QString executableName(qProjectName);
     json cacheFile;
+    json previousCacheFile;
 
     if (j.contains("exe")){
         executableName = QString::fromStdString(j["exe"]);
@@ -77,6 +78,9 @@ int build(QString fileName){
     if (!fs::exists("./createc_cache.json")){
         createCacheFile(qProjectName, executableName);
     } else {
+        previousCacheFile = loadCacheFile();
+        std::system("rm -rf ./createc_cache.json");
+        createCacheFile(qProjectName, executableName);
         cacheFile = loadCacheFile();
     }
 
@@ -99,12 +103,12 @@ int build(QString fileName){
         bool doACleanBuild = j["cleanBuild"];
 
         if (doACleanBuild){
-            if (!cacheFile.contains("executable")){
+            if (!previousCacheFile.contains("executable")){
                 logError("Could not do a cleanBuild, No executable found in cache file (cache file might not exist. Try removing 'cleanBuild' temporarily.)");
                 return -1;
             }
 
-            std::system(QString("rm -rf ./%1").arg(QString::fromStdString(cacheFile["executable"])).toStdString().c_str());
+            std::system(QString("rm -rf ./%1").arg(QString::fromStdString(previousCacheFile["executable"])).toStdString().c_str());
         }
     }
 
@@ -273,6 +277,24 @@ int main(int argc, char const *argv[])
         }
 
         return build(argv[2]);
+    }
+
+    if (arg == "-i"){
+        if (!fs::exists("./createc_cache.json")){
+            logError("Could not install executable onto the system. No cache file is found.");
+            return -1;
+        }
+        json cacheFile = loadCacheFile();
+        std::system(QString("sudo cp ./%1 /usr/bin").arg(QString::fromStdString(cacheFile["executable"])).toStdString().c_str());
+    }
+
+    if (arg == "-u"){
+        if (!fs::exists("./createc_cache.json")){
+            logError("Could not install executable onto the system. No cache file is found.");
+            return -1;
+        }
+        json cacheFile = loadCacheFile();
+        std::system(QString("sudo rm -rf /usr/bin/%1").arg(QString::fromStdString(cacheFile["executable"])).toStdString().c_str());
     }
 
     return 0;
