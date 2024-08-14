@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/createc.dir/src/createc.cpp.o -o createc  /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.8 

@@ -1,3 +1,0 @@
-/mnt/HDD/CPP/tools/CreateC/build/CMakeFiles/createc.dir
-/mnt/HDD/CPP/tools/CreateC/build/CMakeFiles/edit_cache.dir
-/mnt/HDD/CPP/tools/CreateC/build/CMakeFiles/rebuild_cache.dir
