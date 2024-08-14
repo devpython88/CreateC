@@ -7,6 +7,6 @@
     "libraries": [
         "qt5core"
     ],
-    "cppstd": "20",
+    "cppstd": 20,
     "cleanBuild": true
 }

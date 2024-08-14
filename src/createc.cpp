@@ -109,7 +109,6 @@ int build(QString fileName){
     int optimizationLevel = 0;
     json libraries = json::array();
     int cppStandard = 11;
-    int cStandard = 11;
 
     json scriptsToRunAfter;
     json scriptsToRunBefore;
@@ -159,18 +158,6 @@ int build(QString fileName){
         logInfo("Set clang standard to " + std::to_string(cppStandard));
     }
 
-    if (j.contains("cstd")){
-        int standard = j["cstd"];
-
-        if (standard != 11 && standard != 14 && standard != 17 && standard != 20 && standard != 23){
-            logError("C standard is invalid!");
-            return -1;
-        }
-
-        cStandard = standard;
-        logInfo("Set clang standard to " + std::to_string(cStandard));
-    }
-
     /* END */
     /* SCRIPTS */
     if (j.contains("scripts")){
@@ -189,7 +176,8 @@ int build(QString fileName){
     // Make and run the command
     QString command("g++ -o ");
     command.append(QString("%1%2").arg(outputDirectory, executableName));
-    command.append(QString(" -std=c++%1 -std=c%2 ").arg(cppStandard, cStandard ));
+    command.append(QString::fromStdString(" -std=c++" + std::to_string(cppStandard) + " "));
+
 
     for (const auto& source : sourcefiles){
         command.append(QString::fromStdString(source));
