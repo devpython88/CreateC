@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(createc)
+set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/qt5" "/usr/include/x86_64-linux-gnu/qt5")
 

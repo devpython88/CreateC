@@ -6,7 +6,7 @@
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
-const std::string VERSION = "v1.61";
+const std::string VERSION = "v2.0";
 
 void logInfo(std::string text){
     std::cout << "[INFO] " << text << std::endl;
@@ -41,8 +41,19 @@ json loadCacheFile(){
         file.close();
         return cacheFile;
     } else {
-        logError("Could not create cache file.");
+        logError("Could not load cache file.");
         return json();
+    }
+}
+
+
+void runScripts(auto scripts){
+    for (const auto& script : scripts){
+        int res = std::system(QString("bash %1").arg(QString::fromStdString(script)).toStdString().c_str());
+        if (res != 0){
+            logError(QString("Error in script: %1").arg(QString::fromStdString(script)).toStdString().c_str());
+            std::exit(-1);
+        }
     }
 }
 
@@ -68,6 +79,7 @@ int build(QString fileName){
     std::string projectName = j["project"];
     QString qProjectName(QString::fromStdString(projectName));
     QString executableName(qProjectName);
+    QString outputDirectory("./");
     json cacheFile;
     json previousCacheFile;
 
@@ -75,12 +87,16 @@ int build(QString fileName){
         executableName = QString::fromStdString(j["exe"]);
     }
 
+    if (j.contains("outputDir")){
+        outputDirectory = QString::fromStdString(j["outputDir"]);
+    }
+
     if (!fs::exists("./createc_cache.json")){
-        createCacheFile(qProjectName, executableName);
+        createCacheFile(qProjectName, QString("%1%2").arg(outputDirectory, executableName));
     } else {
         previousCacheFile = loadCacheFile();
         std::system("rm -rf ./createc_cache.json");
-        createCacheFile(qProjectName, executableName);
+        createCacheFile(qProjectName, QString("%1%2").arg(outputDirectory, executableName));
         cacheFile = loadCacheFile();
     }
 
@@ -96,6 +112,9 @@ int build(QString fileName){
     std::string cStandard = "11";
     json includeDirs = json::array();
     json libDirs = json::array();
+
+    json scriptsToRunAfter;
+    json scriptsToRunBefore;
 
     auto sourcefiles = j["sources"];
 
@@ -163,15 +182,35 @@ int build(QString fileName){
     }
 
     /* END */
+    /* SCRIPTS */
+    if (j.contains("scripts")){
+        auto scripts = j["scripts"];
+
+        if (scripts.contains("after")){
+            scriptsToRunAfter = scripts["after"];
+        }
+
+        if (scripts.contains("before")){
+            scriptsToRunBefore = scripts["before"];
+            runScripts(scriptsToRunBefore);
+        }
+    }
 
     // Make and run the command
     QString command("g++ -o ");
-    command.append(executableName);
+    command.append(QString("%1%2").arg(outputDirectory, executableName));
     command.append(" ");
 
     for (const auto& source : sourcefiles){
         command.append(QString::fromStdString(source));
         command.append(" ");
+    }
+
+
+    if (j.contains("verbose")){
+        if (j["verbose"] == true){
+            command.append("-v ");
+        }
     }
 
     if (optimizationLevel > 0){
@@ -245,6 +284,10 @@ int build(QString fileName){
         return -1;
     }
 
+    if (!scriptsToRunAfter.empty()){
+        runScripts(scriptsToRunAfter);
+    }
+
     std::cout << "Building completed.\n";
     return 0;
 }
@@ -275,8 +318,13 @@ int main(int argc, char const *argv[])
             std::cerr << "No input file is provided.\n";
             return -1;
         }
+        auto buildFile = argv[2];
 
-        return build(argv[2]);
+        if (buildFile == ".." || buildFile == "." || fs::is_directory(buildFile)){
+            return build(QString("%1/create.json").arg(buildFile).toStdString().c_str());
+        }
+
+        return build(buildFile);
     }
 
     if (arg == "-i"){
