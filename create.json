@@ -1,0 +1,12 @@
+{
+    "project": "createc",
+    "exe": "createc",
+    "sources": [
+        "../src/createc.cpp"
+    ],
+    "libraries": [
+        "qt5core"
+    ],
+    "cppstd": "20",
+    "cleanBuild": true
+}
