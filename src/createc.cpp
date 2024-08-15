@@ -72,72 +72,12 @@ void runScripts(auto scripts)
     }
 }
 
-std::string getANSICode(std::string color)
-{
-    // forced to use if-else, switch doesnt work on strings
-    if (color == "red")
-        return "\033[31m";
-    else if (color == "yellow")
-        return "\033[33m";
-    else if (color == "green")
-        return "\033[32m";
-    else if (color == "blue")
-        return "\033[34m";
-
-    return "!";
-}
-
-void changeColor(std::string color, std::string *dest)
-{
-    std::string clr;
-    if ((clr = getANSICode(color)) != "!")
-    {
-        *dest = clr;
-        return;
-    }
-
-    logError("Invalid color `" + color + "` in createc_colors.json");
-    std::exit(-1);
-}
-
-void changeColors(json j)
-{
-    if (j.contains("infoColor"))
-        changeColor(j["infoColor"], &infoColor);
-    else if (j.contains("errorColor"))
-        changeColor(j["errorColor"], &errorColor);
-}
-
-void readColorsFile(std::string pathToColorsFile)
-{
-    json j;
-    std::ifstream file(pathToColorsFile);
-
-    if (!file.is_open())
-    {
-        logError("Could not load color file.");
-        std::exit(-1);
-    }
-
-    file >> j;
-
-    changeColors(j);
-}
-
 /****************************/
 /****************************/
 
-int build(QString fileName, std::string pathToColorsFile)
+int build(QString fileName)
 {
     std::ifstream file(fileName.toStdString());
-
-    if (!fs::exists(pathToColorsFile))
-    {
-        logError("color file does not exist: " + pathToColorsFile);
-        return -1;
-    }
-
-    readColorsFile(pathToColorsFile);
 
     if (!file.is_open())
     {
@@ -381,14 +321,6 @@ int main(int argc, char const *argv[])
 
     QString arg(argv[1]);
 
-    std::string colorsFile = "./createc_colors.json";
-
-    if (!fs::exists(colorsFile))
-        colorsFile = "/usr/share/createc_colors.json";
-    if (!fs::exists("/usr/share/createc_colors.json"))
-        logError("No color file is found (searched in ./ and ~/usr/share/)");
-        return -1;
-
     // if the user is checking the version
     if (arg == "-v" || arg == "-V" || arg == "--version" || arg == "-version" || arg == "--v")
     {
@@ -409,10 +341,10 @@ int main(int argc, char const *argv[])
 
         if (buildFile == ".." || buildFile == "." || fs::is_directory(buildFile))
         {
-            return build(QString("%1/create.json").arg(buildFile).toStdString().c_str(), colorsFile);
+            return build(QString("%1/create.json").arg(buildFile).toStdString().c_str());
         }
 
-        return build(buildFile, colorsFile);
+        return build(buildFile);
     }
 
     if (arg == "-i")
