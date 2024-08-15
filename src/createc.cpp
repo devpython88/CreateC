@@ -385,8 +385,9 @@ int main(int argc, char const *argv[])
 
     if (!fs::exists(colorsFile))
         colorsFile = "~/.local/createc_colors.json";
-    else
+    if (!fs::exists("~/.local/createc_colors.json"))
         logError("No color file is found (searched in ./ and ~/.local/)");
+        return -1;
 
     // if the user is checking the version
     if (arg == "-v" || arg == "-V" || arg == "--version" || arg == "-version" || arg == "--v")
