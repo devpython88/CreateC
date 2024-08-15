@@ -6,7 +6,7 @@
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
-const std::string VERSION = "v2.13";
+const std::string VERSION = "v2.13-2";
 
 std::string infoColor = "\033[34m";
 std::string errorColor = "\033[31m";
@@ -349,7 +349,7 @@ int build(QString fileName, std::string pathToColorsFile)
         }
     }
 
-    std::cout << "Building started.. [50%]\033[0m\n";
+    std::cout << "\033[33mBuilding started.. [50%]\033[0m\n";
 
     // execute
     int result = std::system(command.toStdString().c_str());
@@ -364,7 +364,7 @@ int build(QString fileName, std::string pathToColorsFile)
         runScripts(scriptsToRunAfter);
     }
 
-    std::cout << "Building completed. [100%]\033[0m\n";
+    std::cout << "\033[32mBuilding completed. [100%]\033[0m\n";
     return 0;
 }
 
