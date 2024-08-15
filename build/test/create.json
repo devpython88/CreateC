@@ -3,7 +3,7 @@
     "outputDir": "first/",
     "project": "helloworld",
 	"exe": "hellosss",
-	"cstd": "20",
+	"cppstd": 20,
     "sources": [ 
         "main.cpp",
         "first/first.h",
