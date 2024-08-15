@@ -384,9 +384,9 @@ int main(int argc, char const *argv[])
     std::string colorsFile = "./createc_colors.json";
 
     if (!fs::exists(colorsFile))
-        colorsFile = "~/.local/createc_colors.json";
-    if (!fs::exists("~/.local/createc_colors.json"))
-        logError("No color file is found (searched in ./ and ~/.local/)");
+        colorsFile = "/usr/share/createc_colors.json";
+    if (!fs::exists("/usr/share/createc_colors.json"))
+        logError("No color file is found (searched in ./ and ~/usr/share/)");
         return -1;
 
     // if the user is checking the version
