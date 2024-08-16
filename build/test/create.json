@@ -1,20 +1,12 @@
 {
     "cleanBuild": true,
-    "outputDir": "first/",
     "project": "helloworld",
-	"exe": "hellosss",
+	"exe": "first/hellosss",
 	"cppstd": 20,
     "sources": [ 
         "main.cpp",
         "first/first.h",
         "first/first.cpp"
     ],
-    "includes": [
-        "first"
-    ],
-    "libdirs": [
-        "first"
-    ],
-    "libraries": [        
-    ]
+    "compilerOptions": "-c"
 }

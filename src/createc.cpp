@@ -3,17 +3,23 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include "createc.h"
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
-const std::string VERSION = "v2.13-2";
 
 std::string infoColor = "\033[34m";
 std::string errorColor = "\033[31m";
+std::string warnColor = "\033[33m";
 
 void logInfo(std::string text)
 {
     std::cout << infoColor << "[INF] \033[0m" << text << std::endl;
+}
+
+void logWarning(std::string text)
+{
+    std::cout << warnColor << "[WARN] \033[0m" << text << std::endl;
 }
 
 void logError(std::string text)
@@ -104,11 +110,25 @@ int build(QString fileName)
     if (j.contains("exe"))
     {
         executableName = QString::fromStdString(j["exe"]);
+
+        if (executableName.contains("/"))
+        {
+            logWarning("Executable contains output directory. Use outputDir entry instead");
+        }
     }
 
     if (j.contains("outputDir"))
     {
-        outputDirectory = QString::fromStdString(j["outputDir"]);
+        std::string outputDir = j["outputDir"];
+        QString qOutputDir(QString::fromStdString(outputDir));
+
+        if (!qOutputDir.endsWith("/"))
+        {
+            qOutputDir.append("/");
+        }
+
+        outputDirectory = qOutputDir;
+        logInfo("Output directory: " + qOutputDir.toStdString());
     }
 
     if (!fs::exists("./createc_cache.json"))
@@ -134,6 +154,8 @@ int build(QString fileName)
     json libraries = json::array();
     int cppStandard = 11;
 
+    QString options;
+
     json scriptsToRunAfter;
     json scriptsToRunBefore;
 
@@ -153,6 +175,12 @@ int build(QString fileName)
 
             std::system(QString("rm -rf ./%1").arg(QString::fromStdString(previousCacheFile["executable"])).toStdString().c_str());
         }
+    }
+
+    if (j.contains("compilerOptions"))
+    {
+        options = QString::fromStdString(j["compilerOptions"]);
+        logInfo("Compiler options: " + options.toStdString());
     }
 
     if (j.contains("optlvl"))
@@ -228,6 +256,12 @@ int build(QString fileName)
         }
     }
 
+    if (j.contains("debugMode")){
+        if (j["debugMode"]){
+            command.append("-g ");
+        }
+    }
+
     if (optimizationLevel > 0)
     {
         command.append("-O");
@@ -290,7 +324,6 @@ int build(QString fileName)
     }
 
     std::cout << "\033[33mBuilding started.. [50%]\033[0m\n";
-
     // execute
     int result = std::system(command.toStdString().c_str());
     if (result != 0)
@@ -310,64 +343,3 @@ int build(QString fileName)
 
 /****************************/
 /****************************/
-
-int main(int argc, char const *argv[])
-{
-    if (argc == 1)
-    {
-        std::cerr << "No argument provided" << std::endl;
-        return -1;
-    }
-
-    QString arg(argv[1]);
-
-    // if the user is checking the version
-    if (arg == "-v" || arg == "-V" || arg == "--version" || arg == "-version" || arg == "--v")
-    {
-        std::cout << "CreateC " << VERSION << std::endl;
-        return 0;
-    }
-
-    // if the user is trying to build a project
-
-    if (arg == "-b")
-    {
-        if (argc == 2)
-        {
-            std::cerr << "No input file is provided.\n";
-            return -1;
-        }
-        auto buildFile = argv[2];
-
-        if (buildFile == ".." || buildFile == "." || fs::is_directory(buildFile))
-        {
-            return build(QString("%1/create.json").arg(buildFile).toStdString().c_str());
-        }
-
-        return build(buildFile);
-    }
-
-    if (arg == "-i")
-    {
-        if (!fs::exists("./createc_cache.json"))
-        {
-            logError("Could not install executable onto the system. No cache file is found.");
-            return -1;
-        }
-        json cacheFile = loadCacheFile();
-        std::system(QString("sudo cp ./%1 /usr/bin").arg(QString::fromStdString(cacheFile["executable"])).toStdString().c_str());
-    }
-
-    if (arg == "-u")
-    {
-        if (!fs::exists("./createc_cache.json"))
-        {
-            logError("Could not install executable onto the system. No cache file is found.");
-            return -1;
-        }
-        json cacheFile = loadCacheFile();
-        std::system(QString("sudo rm -rf /usr/bin/%1").arg(QString::fromStdString(cacheFile["executable"])).toStdString().c_str());
-    }
-
-    return 0;
-}
