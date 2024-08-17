@@ -8,5 +8,6 @@
         "first/first.h",
         "first/first.cpp"
     ],
+    "libraries": ["gtk3"],
     "compilerOptions": "-c"
 }

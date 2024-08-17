@@ -27,6 +27,36 @@ void logError(std::string text)
     std::cout << errorColor << "[ERR] \033[0m" << text << std::endl;
 }
 
+bool isPackageInstalled(std::string package)
+{
+    if (package == "gtk3"){
+        if (std::system("pkg-config --exists gtk+-3.0") == 0) return true;
+        else return false;
+    }
+
+    else if (package == "gtkmm"){
+        if (std::system("pkg-config --exists gtkmm-3.0") == 0) return true;
+        else return false;
+    }
+
+    else if (package == "qt5gui"){
+        if (std::system("pkg-config --exists Qt5Gui") == 0) return true;
+        else return false;
+    }
+
+    else if (package == "qt5core"){
+        if (std::system("pkg-config --exists Qt5Core") == 0) return true;
+        else return false;
+    }
+
+    else if (package == "qt5widgets"){
+        if (std::system("pkg-config --exists Qt5Widgets") == 0) return true;
+        else return false;
+    }
+
+    return false;
+}
+
 void createCacheFile(QString projectName, QString executable)
 {
     json cacheData;
@@ -75,6 +105,47 @@ void runScripts(auto scripts)
             logError(QString("Error in script: %1").arg(QString::fromStdString(script)).toStdString().c_str());
             std::exit(-1);
         }
+    }
+}
+
+void installPackage(std::string package){
+    if (package == "gtk3"){
+        std::system("sudo apt install libgtk-3-dev");
+    }
+
+    else if (package == "gtkmm"){
+        std::system("sudo apt install libgtkmm-3.0-dev");
+    }
+
+    else if (package == "qt5gui" || package == "qt5core" || package == "qt5widgets"){
+        std::system("sudo apt install qtbase5-dev");
+    }
+    else if (package == "SDL2"){
+        std::system("sudo apt install libsdl2-dev");
+    }
+}
+
+void askToInstallPackage(std::string package)
+{
+    logWarning("The following package is needed but isn't installed: " + package);
+    logWarning("Would you like to install it? (skip if you dont have 'apt')");
+
+    logWarning("Y/n");
+
+    char choice;
+    std::cin >> choice;
+
+    if (choice != 'y' && choice != 'Y' && choice != 'n' && choice != 'N'){
+        logError("invalid choice.");
+        std::exit(-1);
+    }
+
+    if (choice == 'y' || choice == 'Y'){
+        installPackage(package);
+    }
+
+    else {
+        return;
     }
 }
 
@@ -275,6 +346,10 @@ int build(QString fileName)
         {
             if (lib == "gtkmm")
             {
+                if (!isPackageInstalled(lib)){
+                    askToInstallPackage(lib);
+                }
+
                 QString text("`pkg-config --cflags --libs gtkmm-3.0`");
                 text.append(" ");
                 command.append(text);
@@ -283,6 +358,10 @@ int build(QString fileName)
 
             else if (lib == "gtk3")
             {
+                if (!isPackageInstalled(lib)){
+                    askToInstallPackage(lib);
+                }
+                
                 QString text("`pkg-config --cflags --libs gtk+-3.0` ");
                 command.append(text);
                 continue;
@@ -290,6 +369,10 @@ int build(QString fileName)
 
             else if (lib == "gtk4")
             {
+                if (!isPackageInstalled(lib)){
+                    askToInstallPackage(lib);
+                }
+                
                 QString text("`pkg-config --cflags --libs gtk+-4.0` ");
                 command.append(text);
                 continue;
@@ -297,6 +380,10 @@ int build(QString fileName)
 
             else if (lib == "qt5widgets")
             {
+                if (!isPackageInstalled(lib)){
+                    askToInstallPackage(lib);
+                }
+                
                 QString text("`pkg-config --cflags --libs Qt5Widgets` -fPIC ");
                 command.append(text);
                 continue;
@@ -304,6 +391,10 @@ int build(QString fileName)
 
             else if (lib == "qt5core")
             {
+                if (!isPackageInstalled(lib)){
+                    askToInstallPackage(lib);
+                }
+                
                 QString text("`pkg-config --cflags --libs Qt5Core` -fPIC ");
                 command.append(text);
                 continue;
@@ -311,6 +402,10 @@ int build(QString fileName)
 
             else if (lib == "qt5gui")
             {
+                if (!isPackageInstalled(lib)){
+                    askToInstallPackage(lib);
+                }
+                
                 QString text("`pkg-config --cflags --libs Qt5Gui` -fPIC ");
                 command.append(text);
                 continue;

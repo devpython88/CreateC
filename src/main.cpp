@@ -5,7 +5,7 @@
 
 namespace fs = std::filesystem;
 
-std::string VERSION = "v2.3_beta-1";
+std::string VERSION = "v2.3_beta-2";
 
 int main(int argc, char const *argv[])
 {

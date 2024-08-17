@@ -9,6 +9,9 @@ using json = nlohmann::json;
 void logInfo(std::string text);
 void logWarning(std::string text);
 void logError(std::string text);
+bool isPackageInstalled(std::string package);
+void installPackage(std::string package);
+void askToInstallPackage(std::string package);
 
 void createCacheFile(QString projectName, QString executable);
 json loadCacheFile();
