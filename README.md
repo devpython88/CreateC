@@ -1,5 +1,8 @@
 <img src="/icons/Icon.jpeg" alt="ICON" width=300/>
 
+# WARNING
+## this project is discontinued so it wont recieve any bug fixes or updates, use the new improved <a href="https://github.com/devpython88/CreateCPP">CreateC++</a>
+
 # CreateC
 Website <a href="devpython88.github.io">Here</a> <br>
 CreateC is simple c++ build tool. It simplifies most aspects of c++ building. Such as adding qt5, gtk, gtkmm.
